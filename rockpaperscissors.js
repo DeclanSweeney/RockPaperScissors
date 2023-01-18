@@ -1,8 +1,19 @@
 const RPS_ARRAY = ['rock', 'paper', 'scissors'];
+const buttonDiv = document.querySelector('#buttons');
+const scoreDiv = document.createElement('div');
+const resultDiv = document.createElement('div');
+
+scoreDiv.textContent =
+  'Select an option to begin the game - First to five wins!';
+buttonDiv.appendChild(scoreDiv);
+buttonDiv.appendChild(resultDiv);
+
+let scores = [0, 0];
 
 document.querySelectorAll('button').forEach((item) => {
   item.addEventListener('click', (e) => {
-    playRPSRound(item.id);
+    playRPSRound(item.id, scores);
+    scoreDiv.textContent = `Player: ${scores[0]} Computer: ${scores[1]}`;
   });
 });
 
@@ -35,9 +46,9 @@ function sanitizeInput(playerChoice) {
   }
 }
 
-function determineWinner(compChoice, playerChoice) {
+function determineWinner(compChoice, playerChoice, scores) {
   if (compChoice == playerChoice) {
-    console.log(`Draw! Both players picked ${compChoice}`);
+    resultDiv.textContent = `Draw! Both players picked ${compChoice}`;
     return 0;
   } else {
     if (
@@ -45,39 +56,19 @@ function determineWinner(compChoice, playerChoice) {
       (compChoice == 'paper' && playerChoice == 'rock') ||
       (compChoice == 'scissors' && playerChoice == 'paper')
     ) {
-      console.log(
-        `Computer wins! It chose ${compChoice}, while you chose ${playerChoice}`
-      );
-      return 1;
+      resultDiv.textContent = `Computer wins! It chose ${compChoice}, while you chose ${playerChoice}`;
+      scores[1] += 1;
     } else {
-      console.log(
-        `Player wins! You chose ${playerChoice}, while computer chose ${compChoice}`
-      );
-      return 2;
+      resultDiv.textContent = `Player wins! You chose ${playerChoice}, while computer chose ${compChoice}`;
+      scores[0] += 1;
     }
+    return;
   }
 }
 
-function playRPSRound(playerChoice) {
+function playRPSRound(playerChoice, scores) {
   let compChoice = getComputerChoice();
   let sanitizedChoice = sanitizeInput(playerChoice);
   if (playerChoice == null) return;
-  return determineWinner(compChoice, sanitizedChoice);
+  return determineWinner(compChoice, sanitizedChoice, scores);
 }
-
-let playerScore = 0;
-let compScore = 0;
-while (playerScore < 5 && compScore < 5) {
-  let winner = playRPSRound();
-  switch (winner) {
-    case 1:
-      compScore++;
-      break;
-    case 2:
-      playerScore++;
-      break;
-  }
-}
-console.log(
-  `Game over! Player scored: ${playerScore}, Computer Scored ${compScore}`
-);
